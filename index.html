@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segunda Via de Boleto</title>
+    
+
+    <!-- Importando Bootstrap e FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://kit.fontawesome.com/10cf62e04a.js" crossorigin="anonymous"></script>
+    <link rel="icon" href="./imag/Icone.png" sizes="192x192">
+    <!-- Importando CSS e JS -->
+    <link rel="stylesheet" href="./style.css">
+    <script src="./index.js"></script>
+
+</head>
+<body>
+    <div class="form-container">
+        <img alt="Logo-friopecas" src="https://friopecas.vtexassets.com/assets/vtex.file-manager-graphql/images/ec183638-4b4f-4f51-b192-e2a861282123___39aeb19a84e80b8732f9a6d14a5af150.png" style="margin-left: 14%;">
+        <h4 class="text-center mb-4">2º via de boletos</h4>
+        <form id="consultaForm" onsubmit="enviarFormulario(event)">
+            <div class="mb-3">
+                <label for="email" class="form-label required">Seu E-mail:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                    <input type="email" id="email" name="email" class="form-control" onblur="if (!validarEmail(this.value)) mostrarErro(this, 'E-mail inválido.')" oninput="limparErro(this)" required placeholder="Ex: seuemail@empresa.com.br">
+                </div>
+                <div class="error-message"></div>
+            </div>
+            <div class="mb-3">
+                <label for="cnpj" class="form-label required">CPF/CNPJ:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                    <input type="text" id="cnpj" name="cnpj" class="form-control" required maxlength="18" oninput="aplicarMascaraCPFCNPJ(this); limparErro(this);" onblur="validarCPFCNPJ(this)" placeholder="Ex: 00.000.000/0000-00">
+                </div>
+                <div class="error-message"></div>
+            </div>
+            <div class="mb-3">
+                <label for="cep" class="form-label required">CEP de entrega:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt location_icon" onclick="buscarCEP()" style="cursor: pointer;"></i></span>
+                    <input type="text" id="cep" name="cep" class="form-control" required pattern="\d{5}-?\d{3}" title="Digite um CEP válido no formato 00000-000" placeholder="Ex: 00000-000" maxlength="9">
+                </div>
+                <div class="error-message"></div>
+            </div>
+            <div class="mb-3">
+                <label for="ano" class="form-label required">Ano da Compra:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    <input type="number" id="ano" name="exercicio" class="form-control" required min="2000" max="2099" oninput="limparErro(this)" onblur="if (this.value < 2000 || this.value > new Date().getFullYear()) mostrarErro(this, 'Ano inválido.')" placeholder="Ex: 2024">
+                </div>
+                <div class="error-message"></div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 custom-btn">Solicitar</i></button>
+        </form>
+    </div>
+
+     <!-- Overlay de carregamento -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>Procurando boletos...</p>
+    </div>
+
+     <!-- Overlay e Pop-up de mensagem -->
+    <div id="overlay" class="overlay" onclick="fecharPopup()">
+        <div id="popup" class="popup">
+            <span class="close-btn" onclick="fecharPopup()"><i class="fas fa-times"></i></span>
+            <h3></h3>
+            <p></p>
+        </div>
+    </div>
+
+    
+
+    <!-- Importando Bootstrap JS e dependências -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('cep').addEventListener('input', function (e) {
+            let cep = e.target.value.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+
+            if (cep.length > 5) {
+                cep = cep.slice(0, 5) + '-' + cep.slice(5, 8); // Adiciona o hífen após o quinto dígito
+            }
+
+            e.target.value = cep; // Atualiza o valor do input com a máscara
+        });
+    </script>
+	
+</body>
+</html>

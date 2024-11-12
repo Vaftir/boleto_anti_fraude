@@ -1,0 +1,131 @@
+
+        /* Estilo personalizado para centralizar o formulário e ajustar o overlay */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: rgb(1,31,50);
+            background: linear-gradient(52deg, rgba(1,31,50,1) 0%, rgba(2,43,60,1) 7%, rgba(0,117,171,1) 69%, rgba(0,109,164,1) 87%, rgba(0,109,164,1) 100%);
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        .popup {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup h3 {
+            margin-bottom: 15px;
+        }
+
+        .popup.error {
+            border-left: 5px solid #dc3545;
+        }
+
+        .popup.success {
+            border-left: 5px solid #28a745;
+        }
+
+        .popup.error h3 {
+            color: #dc3545;
+        }
+
+        .popup.success h3 {
+            color: #28a745;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+		
+		 /* Estilo inicial do botão */
+		.custom-btn {
+			background-color: rgba(9, 71, 139, 255);
+			border-color: rgba(9, 71, 139, 255);
+			color: #fff;
+		}
+
+		/* Estilo de hover */
+		.custom-btn:hover {
+			background-color: rgba(4, 114, 166, 255);
+			border-color: rgba(4, 114, 166, 255);
+		}
+		
+		.location_icon:hover{
+			color: rgba(4, 114, 166, 255);
+		}
+        /* Estilos para o overlay de carregamento */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-overlay .spinner-border {
+            margin-bottom: 10px;
+        }
+
+        .required::after {
+            content: " *";
+            color: red;
+            font-weight: bold;
+        }
+
+
+        
