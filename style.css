@@ -127,5 +127,14 @@
             font-weight: bold;
         }
 
+        .popup.warning {
+            border-left: 5px solid #ffc107;
+        }
+        
+        .popup.warning h3 {
+            color: #ffc107;
+        }
+        
+
 
         

@@ -25,6 +25,22 @@ $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
 // Chama o método verificar e passa o CEP recebido via POST
 $cepResponse = ViaCep::verificar($_POST['cep'] ?? '');
 
+
+
+// if ($cepResponse['status'] !== 200) {
+//     // Se o status não for 200, trata como um erro e retorna a mensagem apropriada
+//     http_response_code($cepResponse['status']);
+//     echo json_encode(['error' => $cepResponse['error']]);
+//     exit;
+// }
+// Caso o status seja 200, extrai o valor do CEP validado
+//$cep = $cepResponse['cep'];
+
+
+$cep = $_POST['cep'] ?? '';
+// remove os caracteres não numéricos do CEP
+$cep = preg_replace('/[^0-9]/', '', $cep);
+
 $limiteRequisicoes = new LimiteRequisicoes();
 if (!$limiteRequisicoes->limitarPorCNPJ($cnpj, $cepResponse ?? '',$limiteCeps, $tempo)) {
     http_response_code(429);
@@ -32,24 +48,12 @@ if (!$limiteRequisicoes->limitarPorCNPJ($cnpj, $cepResponse ?? '',$limiteCeps, $
     exit;
 }
 
-if ($cepResponse['status'] !== 200) {
-    // Se o status não for 200, trata como um erro e retorna a mensagem apropriada
-    http_response_code($cepResponse['status']);
-    echo json_encode(['error' => $cepResponse['error']]);
-    exit;
-}
-
-// Caso o status seja 200, extrai o valor do CEP validado
-$cep = $cepResponse['cep'];
-// remove os caracteres não numéricos do CEP
-$cep = preg_replace('/[^0-9]/', '', $cep);
-
 
 $db = new Database();
 // !! ATIVAR PARA PRODUÇÃO
 if ($db->verificaSeExistemPedidosOracle($cnpj, $cep) <= 0) {
     http_response_code(404);
-    echo json_encode(['error' => 'Não Existem pedidos para este CNPJ e CEP.']);
+    echo json_encode(['error' => 'Nenhum boleto foi encontrado. Para mais informações, entre em contato com o time de pos vendas no (31) 4007-2565']);
     exit;
 }
 

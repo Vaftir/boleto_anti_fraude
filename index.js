@@ -19,7 +19,7 @@ async function enviarFormulario(event) {
         if (response.status !== 200) {
             loadingOverlay.classList.remove("active");
             const result = await response.json();
-            mostrarPopup("error", result.error || "Ocorreu um erro ao processar o formulário.");
+            mostrarPopup("warning", result.error || "Ocorreu um erro ao processar o formulário.");
             return;
         }
 
@@ -65,7 +65,7 @@ async function enviarFormulario(event) {
 
         // Mostra o popup apropriado dependendo do número de boletos encontrados
         if (encontrados === 0) {
-            mostrarPopup("error", "Nenhum boleto foi encontrado.");
+            mostrarPopup("warning", "Nenhum boleto foi encontrado. Para mais informações, entre em contato com o time de pos vendas no (31)4007-2565");
         } else {
             mostrarPopup("success", "Boleto(s) encontrado(s). Verifique seus downloads.");
         }  
@@ -127,13 +127,13 @@ async function buscarCEP() {
             if (!data.erro) {
                 mostrarPopup("success", `Endereço: ${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`);
             } else {
-                mostrarPopup("error", "CEP não encontrado.");
+                mostrarPopup("warning", "Não foi possível encontrar o endereço para o CEP fornecido.");
             }
         } catch (error) {
-            mostrarPopup("error", "Erro ao buscar CEP.");
+            mostrarPopup("warning", "Não foi possível buscar o CEP.");
         }
     } else {
-        mostrarPopup("error", "CEP inválido.");
+        mostrarPopup("warning", "CEP inválido.");
     }
 }
 
@@ -141,10 +141,11 @@ function mostrarPopup(tipo, mensagem) {
     const overlay = document.getElementById("overlay");
     const popup = document.getElementById("popup");
     popup.className = `popup ${tipo}`;
-    popup.querySelector("h3").innerText = tipo === "success" ? "Sucesso!" : "Erro!";
+    popup.querySelector("h3").innerText = tipo === "success" ? "Sucesso!" : tipo === "error" ? "Erro!" : "Atenção";
     popup.querySelector("p").innerText = mensagem;
     overlay.classList.add("active");
 }
+
 
 function fecharPopup() {
     document.getElementById("overlay").classList.remove("active");
