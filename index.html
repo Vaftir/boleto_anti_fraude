@@ -54,6 +54,15 @@
             </div>
             <button type="submit" class="btn btn-primary w-100 custom-btn">Solicitar</i></button>
         </form>
+        
+        <form id="verificacaoForm" onsubmit="verificarCodigo(event)" style="display: none;">
+            <h4>Insira o Código de Verificação</h4>
+            <div class="mb-3">
+                <label for="codigo_2fa" class="form-label required">Código de Verificação:</label>
+                <input type="text" id="codigo_2fa" name="codigo_2fa" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 custom-btn">Verificar Código</button>
+        </form>
     </div>
 
      <!-- Overlay de carregamento -->
@@ -63,6 +72,9 @@
         </div>
         <p>Procurando boletos...</p>
     </div>
+
+
+    
 
      <!-- Overlay e Pop-up de mensagem -->
     <div id="overlay" class="overlay" onclick="fecharPopup()">

@@ -1,3 +1,7 @@
+// Variáveis globais para armazenar email e CNPJ após o primeiro envio
+let cnpj = '';
+let email = '';
+
 async function enviarFormulario(event) {
     event.preventDefault();
     const form = document.getElementById('consultaForm');
@@ -6,9 +10,50 @@ async function enviarFormulario(event) {
     const loadingOverlay = document.getElementById("loadingOverlay");
     loadingOverlay.classList.add("active");
 
-    // Inicializa a contagem e a lista dos boletos encontrados
-    let encontrados = 0;
-    let pdf_link = [];
+    try {
+        // Envia o formulário para solicitar o código de 2FA
+        const response = await fetch('server/index.php', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+        loadingOverlay.classList.remove("active");
+
+        if (response.status === 200 && result.message) {
+            // Armazena o email e o CNPJ para uso na verificação de 2FA
+            cnpj = formData.get('cnpj');
+            email = formData.get('email');
+
+            // Esconde o formulário de consulta e exibe o formulário de verificação
+            document.getElementById('consultaForm').style.display = 'none';
+            document.getElementById('verificacaoForm').style.display = 'block';
+            mostrarPopup("success", result.message);
+        } else {
+            mostrarPopup("warning", result.error);
+        }
+    } catch (error) {
+        loadingOverlay.classList.remove("active");
+        mostrarPopup("error", "Erro ao enviar a requisição");
+    }
+}
+
+async function verificarCodigo(event) {
+    event.preventDefault();
+    const codigo2FA = document.getElementById('codigo_2fa').value;
+
+    if (!codigo2FA) {
+        mostrarPopup("warning", "Por favor, insira o código de verificação.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('codigo_2fa', codigo2FA);
+    formData.append('cnpj', cnpj);  // Usa o CNPJ armazenado
+    formData.append('email', email); // Usa o email armazenado
+
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    loadingOverlay.classList.add("active");
 
     try {
         const response = await fetch('server/index.php', {
@@ -16,65 +61,60 @@ async function enviarFormulario(event) {
             body: formData,
         });
 
-        if (response.status !== 200) {
-            loadingOverlay.classList.remove("active");
-            const result = await response.json();
-            mostrarPopup("warning", result.error || "Ocorreu um erro ao processar o formulário.");
-            return;
-        }
-
         const results = await response.json();
         loadingOverlay.classList.remove("active");
 
-        // Verifica se há resultados
-        if (Object.keys(results).length > 0) {
+        if (response.status === 200 && Object.keys(results).length > 0) {
+            let encontrados = 0;
+
             Object.entries(results).forEach(([empresa, pdfBase64]) => {
                 if (pdfBase64) {
                     // Converte o Base64 para Blob
                     const byteCharacters = atob(pdfBase64);
                     const byteNumbers = new Array(byteCharacters.length);
                     for (let i = 0; i < byteCharacters.length; i++) {
-                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                        byteNumbers[i] = pdfBase64.charCodeAt(i);
                     }
                     const byteArray = new Uint8Array(byteNumbers);
                     const pdfBlob = new Blob([byteArray], { type: 'application/pdf' });
 
-                    // Cria uma URL para o Blob e abre em uma nova aba
+                    // Cria uma URL para o Blob e baixa o PDF
                     const pdfUrl = URL.createObjectURL(pdfBlob);
-                    
                     const link = document.createElement('a');
                     link.href = pdfUrl;
                     link.target = '_blank';
                     link.download = `boletos_${empresa}.pdf`;
                     link.click();
 
-                    // Libera a URL do Blob após abrir a aba
+                    // Libera a URL do Blob após o download
                     setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
 
-                    // Armazena a URL dos PDFs encontrados
-                    if (pdfUrl !== 'null') {
-                        encontrados++;
-                        pdf_link.push(pdfUrl);
-                    }
+                    encontrados++;
                 } else {
-                    // Você pode adicionar uma mensagem específica para cada empresa aqui, se necessário.
                     console.log(`Nenhum boleto encontrado para ${empresa}.`);
                 }
             });
-        }
 
-        // Mostra o popup apropriado dependendo do número de boletos encontrados
-        if (encontrados === 0) {
-            mostrarPopup("warning", "Nenhum boleto foi encontrado. Para mais informações, entre em contato com o time de pos vendas no (31)4007-2565");
+            if (encontrados > 0) {
+                mostrarPopup("success", "Boleto(s) encontrado(s). Verifique seus downloads.");
+                //espera 5 segundos e atualiza a página
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000);
+            } else {
+                mostrarPopup("warning", "Nenhum boleto foi encontrado.");
+            }
+
         } else {
-            mostrarPopup("success", "Boleto(s) encontrado(s). Verifique seus downloads.");
-        }  
+            mostrarPopup("warning", results.error || "Código inválido ou expirado.");
+        }
 
     } catch (error) {
         loadingOverlay.classList.remove("active");
-        mostrarPopup("error", "Erro ao enviar a requisição");
+        mostrarPopup("error", "Erro ao verificar o código.");
     }
 }
+
 
 
 function aplicarMascaraCPFCNPJ(input) {
