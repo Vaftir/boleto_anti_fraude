@@ -4,8 +4,9 @@
             {
                 "status": 200,
                 "cep": "36500-134"
-            }
+            },
+            "36500134"
         ],
-        "ultima_requisicao": 1731514059
+        "ultima_requisicao": 1731515369
     }
 }
